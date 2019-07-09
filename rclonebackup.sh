@@ -11,7 +11,7 @@
 ###
 
 ### Why?
-# Freenas (v11.1 onwards) now supports rclone nativetly and also has GUI enteries for Cloudsync, however 
+# Freenas (v11.1 onwards) now supports rclone nativetly and also has GUI entries for Cloudsync, however 
 # there is no option to use additional parameters within the GUI, thus I have adapted a script to be 
 # run instead via a cron job.
 #
