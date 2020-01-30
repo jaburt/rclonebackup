@@ -15,6 +15,10 @@ run instead via a cron job.
 You will need to configure rclone for Backblaze B2 as per: https://rclone.org/b2/ 
 If encrypting your data with rclone you need to configure as per: https://rclone.org/crypt/
 
+The log file rclone produces is not user friendly, therefore this script will also create a more user friendly
+log (to use as the email body).  This shows the stats, and a list of files Copied (new), Copied (replaced existing),
+and Deleted - as well as any errors/notices.
+
 Note: The rclone config file save via the CLI is different to the one used in the FreeNAS GUI, so its
 safe to update this configuration file via "rclone config" without affecting anything you have configured
 in the FreeNAS GUI.
