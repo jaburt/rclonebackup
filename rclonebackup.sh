@@ -11,7 +11,7 @@
 ###
 
 ### Why?
-# Freenas (v11.1 onwards) now supports rclone nativetly and also has GUI entries for Cloudsync, however 
+# Freenas (v11.1 onwards) now supports rclone nativetly and also has GUI enteries for Cloudsync, however 
 # there is no option to use additional parameters within the GUI, thus I have adapted a script to be 
 # run instead via a cron job.
 #
@@ -23,8 +23,14 @@
 # in the FreeNAS GUI.
 ###
 
+### Also
+# The log file rclone produces is not user friendly, therefore this script will also create a more user friendly
+# log (to use as email body).  This shows the stats, and a list of files Copied (new), Copied (replaced existing),
+# and Deleted - as well as any errors/notices.
+###
+
 ### What Parameters?
-#I wish to use the following parameters:
+# I wish to use the following parameters:
 #
 # Number of file transfers to run in parallel. (default 4)  
 # Backblaze recommends that you do lots of transfers simultaneously for maximum speed.  
@@ -76,12 +82,17 @@ src=/mnt/tank
 dest=secret:/
 email=your@email.address
 log_file=/tmp/rclonelog.txt
-log_level=NOTICE
+log_level=INFO
+log_file_formatted=/tmp/rclonelog_formatted.txt
 min_age=15m
 transfers=16
 ###
 
 ### Execute
+# Record start date/time
+started=$(date "+rclone backup started at: %Y-%m-%d %H:%M:%S")
+
+# Start rclone
 rclone sync \
 	--transfers ${transfers} \
 	--fast-list \
@@ -98,19 +109,76 @@ rclone sync \
 	${src} ${dest}
 success=$?
 
+# Record end date/time
+finished=$(date "+ and finished at: %Y-%m-%d %H:%M:%S")
+###
+
+### Create the email
+# Set the email Subject
 if [[ $success != 0 ]]; then
-	subject="rclone backup: An error occurred. Please check the logs. (error code:${success})"
-	body="Refer to https://rclone.org/docs/#exit-code for more information"
+	subject="rclone backup: An error occurred. Please check the logs. (exit code:${success})"
 else
 	subject="rclone backup: Backup succeeded"
-	body=""
 fi
 
+# Create the email body text, i.e. the edited and formatted log extract
+# Create header
+(
+	if [[ $success != 0 ]]; then
+		echo "(refer to https://rclone.org/docs/#exit-code for more information about exit codes)"
+		echo ""
+	fi
+	echo "${started}${finished}"
+	echo ""
+	echo "======================================"
+	echo "The stats for this rclone backup were:"
+	echo "======================================"
+	tail -n6 "${log_file}"
+	echo ""
+) > "${log_file_formatted}"
+
+# List of NEW files copied
+(
+	echo "===================================="
+	echo "The following NEW files were copied:"
+	echo "===================================="
+	grep ': Copied (new)' "${log_file}" | cut -c 29- | rev | cut -c 15- | rev | sort
+	echo ""
+) >> "${log_file_formatted}"
+
+# List of files REPLACED
+(
+	echo "=================================================="
+	echo "The following files were REPLACED with new copies:"
+	echo "=================================================="
+	grep ': Copied (replaced existing)' "${log_file}" | cut -c 29- | rev | cut -c 29- | rev | sort
+	echo ""
+) >> "${log_file_formatted}"
+
+# List of files DELETED
+(
+	echo "================================="
+	echo "The following files were DELETED:"
+	echo "================================="
+	grep ': Deleted' "${log_file}" | cut -c 29- | rev | cut -c 10- | rev | sort
+	echo ""
+) >> "${log_file_formatted}"
+
+# List of any ERRORs or NOTICEs found
+(
+	echo "============================================"
+	echo "The following ERRORs and NOTICEs were found:"
+	echo "============================================"
+	grep 'ERROR :\|NOTICE:' "${log_file}" | cut -c 21-
+) >> "${log_file_formatted}"
+###
+
 ### send the email using the email_attachments.sh script
-/mnt/tank/Sysadmin/scripts/email_attachments.sh ${email} ${email} "${subject}" "${body}" /tmp/rclonelog.txt
+/mnt/tank/Sysadmin/scripts/email_attachments.sh "${email}" "${email}" "${subject}" "$(cat $log_file_formatted)" "${log_file}"
 ###
 
 ### Tidy Up ###
-## Delete the rclone log in preparation of a new log
-rm /tmp/rclonelog.txt
+## Delete the rclone log along with the edited and formatted log extract, in preparation of a new log
+rm "${log_file}"
+rm "${log_file_formatted}"
 ### End ###
