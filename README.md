@@ -25,3 +25,5 @@ email_attachments.sh was not created by me, and was found online - original auth
 Note: The rclone config file save via the CLI is different to the one used in the FreeNAS GUI Cloud Sync Tasks, so its
 safe to update this configuration file via "rclone config" without affecting anything you have configured
 in the FreeNAS GUI.
+
+Installation and setup walkthrough available on the FreeNAS Community Forums: https://www.ixsystems.com/community/resources/a-script-to-run-rclone-on-the-freenas-server-to-backup-nas-data-to-backblaze-b2-cloud-storage.123/
