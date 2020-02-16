@@ -57,7 +57,7 @@
 #
 # Exclude files matching pattern (https://rclone.org/filtering/), make sure you put them within ""
 # --exclude
-# I wish to exclude: Thumbs.db, desktop.ini. AlbumArt*, .recycle, .windows
+# I wish to exclude: Thumbs.db, desktop.ini. AlbumArt*, .recycle, .windows, iocage (Jail files)
 #
 # For testing purposes only (i.e. don't actually sync files), so a trial run with no permanent changes
 # --dry-run
@@ -67,14 +67,14 @@
 # To verify your backup is fine and encrypted correctly you need to use rclone cryptcheck, don't forget to add in your
 # exclusion though, or you will get errors about missing files. i.e.
 #
-# rclone cryptcheck --exclude "Thumbs.db" --exclude "desktop.ini" --exclude "AlbumArt*" --exclude ".recycle/**" --exclude ".windows" /mnt/tank secret:/
+# rclone cryptcheck --exclude "Thumbs.db" --exclude "desktop.ini" --exclude "AlbumArt*" --exclude ".recycle/**" --exclude ".windows" --exclude "iocage/**" /mnt/tank secret:/
 #
 # Further information at: https://rclone.org/commands/rclone_cryptcheck/
 ###
 
 ###
 # In otherwords I'm running:
-# rclone sync --transfers 16 --fast-list --copy-links --min-age 15m --log-level NOTICE --log-file /tmp/rclonelog.txt --b2-hard-delete --exclude "Thumbs.db" --exclude "desktop.ini" --exclude "AlbumArt*" --exclude ".recycle/**" --exclude ".windows" /mnt/tank secret:/
+# rclone sync --transfers 16 --fast-list --copy-links --min-age 15m --log-level NOTICE --log-file /tmp/rclonelog.txt --b2-hard-delete --exclude "Thumbs.db" --exclude "desktop.ini" --exclude "AlbumArt*" --exclude ".recycle/**" --exclude ".windows" --exclude "iocage/**" /mnt/tank secret:/
 ###
 
 ### Define Parameters
