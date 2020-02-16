@@ -1,0 +1,35 @@
+On a successful run you will receive an eamil with the following information, as well as the raw log file as an attachment.
+***************************************************************************************************************************
+
+rclone backup started at: 2020-02-15 19:48:25 and finished at: 2020-02-15 19:59:34
+
+======================================
+The stats for this rclone backup were:
+======================================
+Transferred:   	  512.457M / 512.457 MBytes, 100%, 2.106 MBytes/s, ETA 0s
+Errors:                 0
+Checks:            421476 / 421476, 100%
+Transferred:           21 / 21, 100%
+Elapsed time:      4m3.3s
+
+
+====================================
+The following NEW files were copied:
+====================================
+FamilyJonathan/FreeNAS Server Stuff/setup rclone.txt
+
+==================================================
+The following files were REPLACED with new copies:
+==================================================
+FamilyJonathan/Roleplaying/D&D 5th Edition/Carl's Campaign/Algen Mercia (Jonathan) - ForgedAnvil v2.28b8v08.xlsm
+Sysadmin/scripts/rclonebackup.sh
+
+=================================
+The following files were DELETED:
+=================================
+FamilyJonathan/Roleplaying/D&D 5th Edition/Feats.txt
+
+
+============================================
+The following ERRORs and NOTICEs were found:
+============================================
