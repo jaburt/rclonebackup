@@ -106,6 +106,7 @@ rclone sync \
 	--exclude "AlbumArt*" \
 	--exclude ".recycle/**" \
 	--exclude ".windows" \
+	--exclude "iocage/**" \	
 	${src} ${dest}
 success=$?
 
