@@ -1,0 +1,99 @@
+You will receive an eamil with the raw log file as an attachment.
+*****************************************************************
+
+2020/02/15 19:49:27 INFO  : 
+Transferred:   	         0 / 0 Bytes, -, 0 Bytes/s, ETA -
+Errors:                 0
+Checks:                 0 / 0, -
+Transferred:            0 / 0, -
+Elapsed time:          0s
+
+2020/02/15 19:50:27 INFO  : 
+Transferred:   	         0 / 0 Bytes, -, 0 Bytes/s, ETA -
+Errors:                 0
+Checks:                 0 / 0, -
+Transferred:            0 / 0, -
+Elapsed time:          0s
+
+2020/02/15 19:51:27 INFO  : 
+Transferred:   	         0 / 0 Bytes, -, 0 Bytes/s, ETA -
+Errors:                 0
+Checks:                 0 / 0, -
+Transferred:            0 / 0, -
+Elapsed time:          0s
+
+2020/02/15 19:52:27 INFO  : 
+Transferred:   	         0 / 0 Bytes, -, 0 Bytes/s, ETA -
+Errors:                 0
+Checks:                 0 / 0, -
+Transferred:            0 / 0, -
+Elapsed time:          0s
+
+2020/02/15 19:53:27 INFO  : 
+Transferred:   	         0 / 0 Bytes, -, 0 Bytes/s, ETA -
+Errors:                 0
+Checks:                 0 / 0, -
+Transferred:            0 / 0, -
+Elapsed time:          0s
+
+2020/02/15 19:54:27 INFO  : 
+Transferred:   	         0 / 0 Bytes, -, 0 Bytes/s, ETA -
+Errors:                 0
+Checks:                 0 / 0, -
+Transferred:            0 / 0, -
+Elapsed time:          0s
+
+2020/02/15 19:55:27 INFO  : 
+Transferred:   	         0 / 0 Bytes, -, 0 Bytes/s, ETA -
+Errors:                 0
+Checks:                 0 / 0, -
+Transferred:            0 / 0, -
+Elapsed time:          0s
+
+2020/02/15 19:55:34 INFO  : Sysadmin/scripts/rclonebackup.sh: Copied (replaced existing)
+2020/02/15 19:55:35 INFO  : FamilyJonathan/Roleplaying/D&D 5th Edition/Carl's Campaign/Feats.txt: Copied (new)
+2020/02/15 19:56:27 INFO  : 
+Transferred:   	  121.708M / 512.340 MBytes, 24%, 2.157 MBytes/s, ETA 3m1s
+Errors:                 0
+Checks:            421469 / 421469, 100%
+Transferred:           20 / 21, 95%
+Elapsed time:       56.4s
+Transferring:
+ * SyncthingData/Camera (…thumbdata4--1967290299: 18% /476.383M, 1.763M/s, 3m41s
+
+2020/02/15 19:57:27 INFO  : 
+Transferred:   	  253.145M / 512.340 MBytes, 49%, 2.173 MBytes/s, ETA 1m59s
+Errors:                 0
+Checks:            421469 / 421469, 100%
+Transferred:           20 / 21, 95%
+Elapsed time:     1m56.4s
+Transferring:
+ * SyncthingData/Camera (…thumbdata4--1967290299: 45% /476.383M, 2.186M/s, 1m58s
+
+2020/02/15 19:58:27 INFO  : 
+Transferred:   	  382.301M / 512.340 MBytes, 75%, 2.167 MBytes/s, ETA 1m
+Errors:                 0
+Checks:            421469 / 421469, 100%
+Transferred:           20 / 21, 95%
+Elapsed time:     2m56.4s
+Transferring:
+ * SyncthingData/Camera (…thumbdata4--1967290299: 72% /476.383M, 2.146M/s, 1m0s
+
+2020/02/15 19:59:27 INFO  : 
+Transferred:   	  506.176M / 512.340 MBytes, 99%, 2.141 MBytes/s, ETA 2s
+Errors:                 0
+Checks:            421469 / 421469, 100%
+Transferred:           20 / 21, 95%
+Elapsed time:     3m56.4s
+Transferring:
+ * SyncthingData/Camera (…thumbdata4--1967290299: 98% /476.383M, 1.928M/s, 3s
+
+2020/02/15 19:59:33 INFO  : Waiting for deletions to finish
+2020/02/15 19:59:34 INFO  : FamilyJonathan/Roleplaying/D&D 5th Edition/Feats.txt: Deleted
+
+2020/02/15 19:59:34 INFO  : 
+Transferred:   	  512.457M / 512.457 MBytes, 100%, 2.106 MBytes/s, ETA 0s
+Errors:                 0
+Checks:            421476 / 421476, 100%
+Transferred:           21 / 21, 100%
+Elapsed time:      4m3.3s
