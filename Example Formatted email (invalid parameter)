@@ -1,0 +1,9 @@
+You will receive an eamil with the following information.
+*********************************************************
+
+rclonebackup.sh script started at: 2020-03-09 12:06:13 and finished at: 2020-03-09 12:06:13
+
+Invalid Parameters were provided to the rclonebackup.sh script, correct usage is:
+
+---- To start a rclone sync use the parameter sync, i.e. rclonebackup.sh sync
+---- To start a cryptcheck use the parameter cryptcheck, i.e. rclonebackup.sh cryptcheck
