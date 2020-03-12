@@ -1,0 +1,21 @@
+You will receive an eamil with the following information, as well as the raw log file as an attachment.
+*******************************************************************************************************
+
+rclonebackup.sh script started at: 2020-03-09 12:34:01 and finished at: 2020-03-09 12:34:01
+
+================================
+The following ERRORs were found:
+================================
+ERROR : Sysadmin/new_rclonebackup.sh: File not in Local file system at /mnt/tank
+ERROR : Sysadmin/sync_rclonelog.txt: File not in Local file system at /mnt/tank
+ERROR : TemporaryStuff/Films/Test Document.txt: File not in Encrypted drive 'secret:/'
+ERROR : SyncthingData/Camera (from JAB Mobile Phone)/Camera/IMG_20200306_104403.jpg: File not in Local file system at /mnt/tank
+
+=================================
+The following NOTICEs were found:
+=================================
+NOTICE: Encrypted drive 'secret:/': 9 files missing
+NOTICE: Local file system at /mnt/tank: 6 files missing
+NOTICE: Encrypted drive 'secret:/': 17 differences found
+NOTICE: Encrypted drive 'secret:/': 2064 hashes could not be checked
+NOTICE: Encrypted drive 'secret:/': 421624 matching files
