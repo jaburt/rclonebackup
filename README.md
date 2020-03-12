@@ -32,7 +32,8 @@ Change Log
 ----------
 Update(1) The log file rclone produces is not user friendly, therefore this script will also create a more user
 friendly log (to use as the email body).  This shows the stats, and for "sync" a list of files Copied (new),
-Copied (replaced existing), and Deleted - as well as any errors/notices; for "cryptcheck" XXXXXXX
+Copied (replaced existing), and Deleted - as well as any errors/notices; for "cryptcheck" it only lists
+errors or notices.
 
 Update(2): I've noticed that since upgrading to FreeNAS v11.3 that this script was no longer working.  When
 you create the "rclone.conf" file from a shell prompt (or SSH connection) with the command "rclone config"
