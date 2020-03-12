@@ -19,7 +19,7 @@ The log file rclone produces is not user friendly, therefore this script will al
 log (to use as the email body).  This shows the stats, and a list of files Copied (new), Copied (replaced existing),
 and Deleted - as well as any errors/notices.
 
-My script calles the script email_attachments.sh to create an email body with the raw log file as an attachment.  The
+My script calls the script email_attachments.sh to create an email body with the raw log file as an attachment.  The
 email_attachments.sh was not created by me, and was found online - original author unknown.
 
 Note: The rclone config file save via the CLI is different to the one used in the FreeNAS GUI Cloud Sync Tasks, so its
