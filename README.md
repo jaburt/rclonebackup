@@ -29,6 +29,7 @@ in the FreeNAS GUI.
 Installation and setup walkthrough available on the FreeNAS Community Forums: https://www.ixsystems.com/community/resources/a-script-to-run-rclone-on-the-freenas-server-to-backup-nas-data-to-backblaze-b2-cloud-storage.123/
 
 Change Log
+----------
 Update(1) The log file rclone produces is not user friendly, therefore this script will also create a more user
 friendly log (to use as the email body).  This shows the stats, and for "sync" a list of files Copied (new),
 Copied (replaced existing), and Deleted - as well as any errors/notices; for "cryptcheck" XXXXXXX
