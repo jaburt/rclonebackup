@@ -6,94 +6,160 @@
 # FreeNAS: https://freenas.org/
 # rclone: https://rclone.org/
 #
-# Script was adapted from the one posted in the FreeNAS community forums by Martin Aspeli 
+# Script was adapted from the one posted in the FreeNAS community forums by Martin Aspeli
 # https://www.ixsystems.com/community/threads/rclone-backblaze-b2-backup-solution-instead-of-crashplan.58423/
+#
+# Latest version of this script can be found at: https://github.com/jaburt
 ###
 
 ### Why?
-# Freenas (v11.1 onwards) now supports rclone nativetly and also has GUI enteries for Cloudsync, however 
-# there is no option to use additional parameters within the GUI, thus I have adapted a script to be 
+# Freenas (v11.1 onwards) now supports rclone natively and also has GUI entries for Cloudsync, however
+# there is no/limited option(s) to use additional parameters within the GUI, thus I have adapted a script to be
 # run instead via a cron job.
 #
-# You will need to configure rclone for Backblaze B2 as per: https://rclone.org/b2/ 
+# You will need to configure rclone for Backblaze B2 as per: https://rclone.org/b2/
 # If encrypting your data with rclone you need to configure as per: https://rclone.org/crypt/
 #
-# Note: The rclone config file save via the CLI is different to the one used in the FreeNAS GUI, so its
+# Note(1): The rclone config file saved via the CLI is different to the one used in the FreeNAS GUI, so its
 # safe to update this configuration file via "rclone config" without affecting anything you have configured
 # in the FreeNAS GUI.
+#
+# Note (2): If you are not using Backblaze B2 but another cloud provider then this script *may* still work,
+# but it depends on the specifics of that provider.  You would need to be aware of the following:
+#	Check the configuration guide on https://rclone.org/ for your cloud provider;
+#	You may need to adjust the "transfers" value;
+#	You will need to delete the "--b2-hard-delete" line from the script;
+#	You may need to remove the "--fast-list" line from the script;
 ###
 
-### Also
-# The log file rclone produces is not user friendly, therefore this script will also create a more user friendly
-# log (to use as email body).  This shows the stats, and a list of files Copied (new), Copied (replaced existing),
-# and Deleted - as well as any errors/notices.
-###
-
-### What Parameters?
-# I wish to use the following parameters:
+### Change Log
+# Update(1) The log file rclone produces is not user friendly, therefore this script will also create a more user
+# friendly log (to use as the email body).  This shows the stats, and for "sync" a list of files Copied (new),
+# Copied (replaced existing), and Deleted - as well as any errors/notices; for "cryptcheck" XXXXXXX
 #
-# Number of file transfers to run in parallel. (default 4)  
-# Backblaze recommends that you do lots of transfers simultaneously for maximum speed.  
-# --transfers int
+# Update(2): I've noticed that since upgrading to FreeNAS v11.3 that this script was no longer working.  When
+# you create the "rclone.conf" file from a shell prompt (or SSH connection) with the command "rclone config"
+# it is stored at "/root/.config/rclone/rclone.conf" (you can check this by running the command "rclone config file").
+# However, when you then run this bash script as a cron task, for some reason it is looking for the config file at
+# "/.config/rclone/rclone.conf"; a quick fix was to copy the "rclone.conf" file to this folder.  However, it's not a
+# good idea to have multiple copies of the "rclone.conf" config file as this could become confusing when you make
+# changes.  Therefore I decided to update the script to utilise the "--config" parameter of rclone to point to the
+# config file created at "/root/.config/rclone/rclone.conf".  I did log this as a bug (NAS-105088), but it was closed
+# by IX as a script issue - however, I don't believe that is correct!
 #
-# Use recursive list if available. Uses more memory but fewer transactions (i.e. cheaper). Backblaze B2 supports.
-# --fast-list
-# 
-# Follow symlinks and copy the pointed to item.
-# --copy-links
-#
-# Only transfer files older than this in s or suffix ms|s|m|h|d|w|M|y (default off)
-# --min-age 15m
-#
-# Log everything to a log file
-# --log-file filename
-#
-# This sets the log level for rclone. The default log level is NOTICE.
-# --log-level level
-#
-# Permanently delete files on remote removal, otherwise hide files. Backblaze B2 specific parameter. 
-# Note: This means no version control of files on backblaze (saves space & thus costs)
-# --b2-hard-delete
-#
-# Exclude files matching pattern (https://rclone.org/filtering/), make sure you put them within ""
-# --exclude
-# I wish to exclude: Thumbs.db, desktop.ini. AlbumArt*, .recycle, .windows, iocage (Jail files)
-#
-# For testing purposes only (i.e. don't actually sync files), so a trial run with no permanent changes
-# --dry-run
+# Update(3): I have updated the script to be dual purpose, with regard to running a "rclone sync" to backup, and
+# "rclone cryptcheck" to do a verification of your cloud based files and see if any files are missing as well as
+# confirming the checksums of all encrypted files (for the paranoid out there!).  You now need to run this script
+# with an parameter, for example: "rclonebackup.sh sync" or "rclonebackup.sh cryptcheck", any other parameters or
+# no parameter will result in an error email being sent.  As this reuses code dynamically it means that any
+# configuration changes in this script are only entered once and used for both sync and cryptcheck.
+# Further information about cryptcheck can be found at: https://rclone.org/commands/rclone_cryptcheck/
 ###
 
 ###
-# To verify your backup is fine and encrypted correctly you need to use rclone cryptcheck, don't forget to add in your
-# exclusion though, or you will get errors about missing files. i.e.
-#
-# rclone cryptcheck --exclude "Thumbs.db" --exclude "desktop.ini" --exclude "AlbumArt*" --exclude ".recycle/**" --exclude ".windows" --exclude "iocage/**" /mnt/tank secret:/
-#
-# Further information at: https://rclone.org/commands/rclone_cryptcheck/
+# Basically this script is running the following command, and then creating a user-friendly log:
+# rclone sync|cryptcheck --config=LOCATION --transfers 16 --fast-list --copy-links --min-age 15m --log-level NOTICE --log-file /tmp/rclonelog.txt --b2-hard-delete --exclude "Thumbs.db" --exclude "desktop.ini" --exclude "AlbumArt*" --exclude ".recycle/**" --exclude ".windows" --exclude "iocage/**" /mnt/tank secret:/
 ###
 
-###
-# In otherwords I'm running:
-# rclone sync --transfers 16 --fast-list --copy-links --min-age 15m --log-level NOTICE --log-file /tmp/rclonelog.txt --b2-hard-delete --exclude "Thumbs.db" --exclude "desktop.ini" --exclude "AlbumArt*" --exclude ".recycle/**" --exclude ".windows" --exclude "iocage/**" /mnt/tank secret:/
-###
-
-### Define Parameters
+### Define Configuration Items
+# The top-level source folder/directory you wish to sync/cryptcheck with rclone.
 src=/mnt/tank
+
+# The destination remote/bucket (as defined with your rclone config setup).
 dest=secret:/
-email=your@email.address
-log_file=/tmp/rclonelog.txt
+
+# Your email address, so that you can receive the emails generated by this script.
+your_email=your@email.address
+
+# The path where you have saved the "email_attachments.sh" file (include the filename as well).
+attachments_script=/mnt/tank/Sysadmin/scripts/email_attachments.sh
+
+# Location and name of the log files used by the script (no need to change these), they are deleted at the
+# end of the script.
+log_file=/tmp/jab_rclonelog.txt
+log_file_formatted=/tmp/jab_rclonelog_formatted.txt
+invalid_email_body=/tmp/jab_rclonelog_invalid.txt
+
+# This sets the log level for rclone, using the "--log-level" parameter. The default log level is NOTICE.
+# I would recommend you use NOTICE for your first sync as it can take a while, and if you not careful it
+# can produce a rather large log file.  Once you have completed your first sync, you can change to INFO
+# for a more detailed log for future updates.
 log_level=INFO
-log_file_formatted=/tmp/rclonelog_formatted.txt
+
+# Only transfer files older than this in s or suffix ms|s|m|h|d|w|M|y (default off), using the "--min-age="
+# parameter.  A good way to skip open files.
 min_age=15m
+
+# Number of file transfers to run in parallel (default 4) using the "--transfers" parameter. Backblaze recommends
+# that you do lots of transfers simultaneously for maximum speed.  You will want to experience with this depending
+# on your Internet connection speed.
 transfers=16
+
+# Set the location of the "rclone.conf" file (as displayed with the command "rclone config file"), using the
+# "--config=" parameter.
+cfg_file=/root/.config/rclone/rclone.conf
+
+# Create a variable with the start date/time of script execution (no need to change this).
+started=$(date "+rclonebackup.sh script started at: %Y-%m-%d %H:%M:%S")
+
+# I am also using the following extra parameters:
+#
+# Use recursive list if available, using the "--fast-list" parameter. Uses more memory but fewer transactions
+# (i.e. cheaper). Backblaze B2 supports.
+#
+# Follow symlinks, using the "--copy-links" parameter, and copy the pointed to items.
+#
+# Log everything to a log file, using the "--log-file" parameter.
+#
+# Permanently delete files on remote removal, otherwise hide files, using the "--b2-hard-delete" parameter.
+# This is a Backblaze B2 specific parameter.
+# Note: This means no version control of files on backblaze (saves space & thus costs).
+#
+# Exclude files matching pattern (https://rclone.org/filtering/) using the "--exclude" parameter.  Make sure
+# you put them within "quotes", and you will need to create an "--exclude" line for each file type and/or folder
+# you want to exclude (in the "run_rclone()" function below)..
+# For example, I wish to exclude: Thumbs.db, desktop.ini. AlbumArt*, .recycle, .windows, iocage/** (Jail files)
 ###
 
-### Execute
-# Record start date/time
-started=$(date "+rclone backup started at: %Y-%m-%d %H:%M:%S")
+### A short function to tidy-up after the script has finished.
+run_tidyup() {
+# Delete the rclone log along with the edited and formatted log extract as well as the invalid parameters 
+# email, in preparation for a new set of files on the next run and to save space!
+rm -f "${log_file}"
+rm -f "${log_file_formatted}"
+rm -f "${invalid_email_body}"
+}
+###
 
-# Start rclone
-rclone sync \
+### A function to report that an invalid parameter has been passed upon script execution.
+run_invalid() {
+# Set the email subject.
+subject="ERROR: Invalid Parameters provided to the rclonebackup.sh script!"
+
+# Create a variable with the end date/time of script execution (no need to change this).
+finished=$(date "+ and finished at: %Y-%m-%d %H:%M:%S")
+
+# Create the email text
+(
+	echo "${started}${finished}"
+	echo ""
+	echo "Invalid Parameters were provided to the rclonebackup.sh script, correct usage is:"
+	echo ""
+	echo "---- To start a rclone sync use the parameter sync, i.e. rclonebackup.sh sync"
+	echo "---- To start a cryptcheck use the parameter cryptcheck, i.e. rclonebackup.sh cryptcheck"
+) > "${invalid_email_body}"
+
+# Send the emails
+"${attachments_script}" "${your_email}" "${your_email}" "${subject}" "$(cat $invalid_email_body)"
+}
+###
+
+### A function which does the main work by calling rclone with all the configured parameters and then
+### formatting the log.
+run_rclone() {
+# Execute rclone as a sync or cryptcheck, based on $1 parameter
+rclone "$1" \
+	--config=${cfg_file} \
 	--transfers ${transfers} \
 	--fast-list \
 	--copy-links \
@@ -106,80 +172,109 @@ rclone sync \
 	--exclude "AlbumArt*" \
 	--exclude ".recycle/**" \
 	--exclude ".windows" \
-	--exclude "iocage/**" \	
+	--exclude "iocage/**" \
 	${src} ${dest}
 success=$?
 
-# Record end date/time
-finished=$(date "+ and finished at: %Y-%m-%d %H:%M:%S")
-###
+## Temporary removing "TemporaryStuff/Films/**" when running cryptcheck to get log
 
-### Create the email
-# Set the email Subject
+# Set the email Subject.
 if [[ $success != 0 ]]; then
-	subject="rclone backup: An error occurred. Please check the logs. (exit code:${success})"
+	subject="rclone: An error occurred with the rclonebackup.sh $1. Please check the logs. (exit code:${success})"
 else
-	subject="rclone backup: Backup succeeded"
+	subject="rclone: rclonebackup.sh $1 succeeded"
 fi
 
-# Create the email body text, i.e. the edited and formatted log extract
-# Create header
-(
-	if [[ $success != 0 ]]; then
-		echo "(refer to https://rclone.org/docs/#exit-code for more information about exit codes)"
+# Create a variable with the end date/time of script execution (no need to change this).
+finished=$(date "+ and finished at: %Y-%m-%d %H:%M:%S")
+
+if [[ "$1" = "sync" ]]
+	then
+# Create the email body text, i.e. the edited and formatted log extract for a "sync" process.
+	(
+		if [[ $success != 0 ]]; then
+			echo "(refer to https://rclone.org/docs/#exit-code for more information about exit codes)"
+			echo ""
+		fi
+		echo "${started}${finished}"
 		echo ""
-	fi
-	echo "${started}${finished}"
-	echo ""
-	echo "======================================"
-	echo "The stats for this rclone backup were:"
-	echo "======================================"
-	tail -n6 "${log_file}"
-	echo ""
-) > "${log_file_formatted}"
+		echo "======================================"
+		echo "The stats for this rclone backup were:"
+		echo "======================================"
+		tail -n6 "${log_file}"
+		echo ""
+	) > "${log_file_formatted}"
 
-# List of NEW files copied
-(
-	echo "===================================="
-	echo "The following NEW files were copied:"
-	echo "===================================="
-	grep ': Copied (new)' "${log_file}" | cut -c 29- | rev | cut -c 15- | rev | sort
-	echo ""
-) >> "${log_file_formatted}"
+# List of NEW files copied.
+	(
+		echo "===================================="
+		echo "The following NEW files were copied:"
+		echo "===================================="
+		grep ': Copied (new)' "${log_file}" | cut -c 29- | rev | cut -c 15- | rev | sort
+		echo ""
+	) >> "${log_file_formatted}"
 
-# List of files REPLACED
-(
-	echo "=================================================="
-	echo "The following files were REPLACED with new copies:"
-	echo "=================================================="
-	grep ': Copied (replaced existing)' "${log_file}" | cut -c 29- | rev | cut -c 29- | rev | sort
-	echo ""
-) >> "${log_file_formatted}"
+# List of files REPLACED.
+	(
+		echo "=================================================="
+		echo "The following files were REPLACED with new copies:"
+		echo "=================================================="
+		grep ': Copied (replaced existing)' "${log_file}" | cut -c 29- | rev | cut -c 29- | rev | sort
+		echo ""
+	) >> "${log_file_formatted}"
 
-# List of files DELETED
-(
-	echo "================================="
-	echo "The following files were DELETED:"
-	echo "================================="
-	grep ': Deleted' "${log_file}" | cut -c 29- | rev | cut -c 10- | rev | sort
-	echo ""
-) >> "${log_file_formatted}"
+# List of files DELETED.
+	(
+		echo "================================="
+		echo "The following files were DELETED:"
+		echo "================================="
+		grep ': Deleted' "${log_file}" | cut -c 29- | rev | cut -c 10- | rev | sort
+		echo ""
+	) >> "${log_file_formatted}"
 
-# List of any ERRORs or NOTICEs found
-(
-	echo "============================================"
-	echo "The following ERRORs and NOTICEs were found:"
-	echo "============================================"
-	grep 'ERROR :\|NOTICE:' "${log_file}" | cut -c 21-
-) >> "${log_file_formatted}"
+# List of any ERRORs or NOTICEs found.
+	(
+		echo "============================================"
+		echo "The following ERRORs and NOTICEs were found:"
+		echo "============================================"
+		grep 'ERROR :\|NOTICE:' "${log_file}" | cut -c 21-
+	) >> "${log_file_formatted}"
+
+	else
+# List of any ERRORs found.
+	(
+		echo "${started}${finished}"
+		echo ""
+		echo "================================"
+		echo "The following ERRORs were found:"
+		echo "================================"
+		grep 'ERROR :' "${log_file}" | cut -c 21-
+		echo ""
+	) > "${log_file_formatted}"
+
+# List of any NOTICEs found.
+	(
+		echo "================================="
+		echo "The following NOTICEs were found:"
+		echo "================================="
+		grep 'NOTICE:' "${log_file}" | cut -c 21-
+	) >> "${log_file_formatted}"
+fi
+
+# send the email using the email_attachments.sh script.
+"${attachments_script}" "${your_email}" "${your_email}" "${subject}" "$(cat $log_file_formatted)" "${log_file}"
+}
 ###
 
-### send the email using the email_attachments.sh script
-/mnt/tank/Sysadmin/scripts/email_attachments.sh "${email}" "${email}" "${subject}" "$(cat $log_file_formatted)" "${log_file}"
+### Check the parameter passed upon script execution, and run the relevant bespoke functions (detailed above).
+if [[ "$1" = "sync" ]] || [[ "$1" = "cryptcheck" ]]
+	then
+		run_rclone "$1"
+		run_tidyup
+		exit ${success}
+	else
+		run_invalid
+		run_tidyup
+		exit 1
+fi
 ###
-
-### Tidy Up ###
-## Delete the rclone log along with the edited and formatted log extract, in preparation of a new log
-rm "${log_file}"
-rm "${log_file_formatted}"
-### End ###
