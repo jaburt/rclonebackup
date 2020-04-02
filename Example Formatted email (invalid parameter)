@@ -1,9 +1,16 @@
-You will receive an eamil with the following information.
+You will receive an email with the following information.
 *********************************************************
 
-rclonebackup.sh script started at: 2020-03-09 12:06:13 and finished at: 2020-03-09 12:06:13
+rclonebackup.sh script started at: 2020-04-02 14:36:36 and finished at: 2020-04-02 14:36:36
 
 Invalid Parameters were provided to the rclonebackup.sh script, correct usage is:
 
 ---- To start a rclone sync use the parameter sync, i.e. rclonebackup.sh sync
----- To start a cryptcheck use the parameter cryptcheck, i.e. rclonebackup.sh cryptcheck
+---- To start a rclone check use the parameter check, i.e. rclonebackup.sh check
+---- To start a rclone cryptcheck use the parameter cryptcheck, i.e. rclonebackup.sh cryptcheck
+
+Also ensure you have saved the rclone_excludes.txt file, as this is needed by the script.
+
+------------------------------------------------------------------------------------------------------------------------------
+Please Note: The latest version of this script can be found at: https://www.github.com/jaburt
+------------------------------------------------------------------------------------------------------------------------------
