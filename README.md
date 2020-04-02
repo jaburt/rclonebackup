@@ -1,4 +1,4 @@
-# rclonebackup
+# Description
 A script to run rclone on the FreeNAS server to backup NAS data to Backblaze B2 cloud storage
 
 FreeNAS: https://freenas.org/
@@ -25,8 +25,7 @@ in the FreeNAS GUI.
 
 Installation and setup walkthrough available on the FreeNAS Community Forums: https://www.ixsystems.com/community/resources/a-script-to-run-rclone-on-the-freenas-server-to-backup-nas-data-to-backblaze-b2-cloud-storage.123/
 
-Change Log
-----------
+# Change Log
 Update(1) The log file rclone produces is not user friendly, therefore this script will also create a more user
 friendly log (to use as the email body).  This shows the stats, and for "sync" a list of files Copied (new),
 Copied (replaced existing), and Deleted - as well as any errors/notices; for "cryptcheck" it only lists
@@ -57,3 +56,5 @@ Further information about cryptcheck can be found at: https://rclone.org/command
 * Have changed the default email to root.
 * Have added in a third parameter option "check", which checks the files in the source and destination match.
 * Rewrote the email generation aspect of the script to remove the need for the separate email_attachments.sh script - all managed within the one script now; as well as moving from "echo" to "printf" commands for more control.
+
+# Usage
