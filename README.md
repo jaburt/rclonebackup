@@ -59,12 +59,15 @@ Further information about cryptcheck can be found at: https://rclone.org/command
 
 # Usage
 1) Configure rclone
+
 First off you need to configure rclone for Backblaze B2 as per: https://rclone.org/b2/, and if encrypting your data with rclone you then need to configure as per: https://rclone.org/crypt/.
 
 2) Download the exclude list and script
+
 Visit my Github page and download the latest script and rclone_excludes.txt, and save them on your server.
 
 3) Edit rclonebackup.sh script and rclone_excludes.txt file
+
 There are eight user-defined fields within the script, however many can be left at their defaults (depending on how you configured rclone).  You will need to review the following three at a minimum:
 
   src=, dest=, exclude_list=
@@ -72,6 +75,7 @@ There are eight user-defined fields within the script, however many can be left 
 Review the rclone_excludes.txt file, and add/remove exclusions as per your requirements.
 
 4) Setup a Tasks -> Cron Jobs on the FreeNAS server
+
 You now want to create a new cron job task via the FreeNAS GUI, remembering the command you want to run is the full path to the rclonebackup.sh script, with the parameter of sync, check or cryptcheck.
 
 I recommend that for the first time you run this, that you do not enable the task. This is because the first run could take some time, many days if you have a few TB to backup. You do not want the server starting a new task while the old one is still running, as this will only confuse the backup process and slow down your server.
