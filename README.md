@@ -80,7 +80,7 @@ There are eight user-defined fields within the script, however many can be left 
 
 however, if you wish to keep a local copy of the logs, you will also need to review the following three:
 
-	 keepLog=, backupDestination=, amountBackups=
+  keepLog=, backupDestination=, amountBackups=
 
 Review the rclone_excludes.txt file, and add/remove exclusions as per your requirements.
 
