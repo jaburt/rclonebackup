@@ -3,13 +3,22 @@ You will receive an email with the following information.
 
 rclonebackup.sh script started at: 2020-04-02 14:36:36 and finished at: 2020-04-02 14:36:36
 
-Invalid Parameters were provided to the rclonebackup.sh script, correct usage is:
+An error has occured, please check the subject line and the usage notes below:
 
----- To start a rclone sync use the parameter sync, i.e. rclonebackup.sh sync
----- To start a rclone check use the parameter check, i.e. rclonebackup.sh check
----- To start a rclone cryptcheck use the parameter cryptcheck, i.e. rclonebackup.sh cryptcheck
+Either invalid parameters were provided to the "rclonebackup.sh" script, correct usage is:
 
-Also ensure you have saved the rclone_excludes.txt file, as this is needed by the script.
+---- To start a rclone sync use the parameter sync, i.e. "rclonebackup.sh sync"
+---- To start a rclone check use the parameter check, i.e. "rclonebackup.sh check"
+---- To start a rclone cryptcheck use the parameter cryptcheck, i.e. "rclonebackup.sh cryptcheck"
+
+or, a user defined variable has failed its verfication check:
+
+---- The rclone configuration file is not at the location referenced in the user defined variable <cfg_file>.
+---- The backup source directory is not valid, as per the location referenced in the user defined variable <src>.
+---- The location where you wish to save copies of the log file in is not valid, as per the location referenced in the user defined variable <backupDestination>. However, this is only checked if <keepLog="yes">.
+---- The amount of backup logs you wish to keep is not a valid integer value (or is zero), as per the number referenced in the user defined variable <amountBackups>. However, this is only checked if <keepLog="yes">.
+
+Also ensure you have saved the "rclone_excludes.txt" file and that is it correctly referenced in the variable <exclude_list>, as this is needed by the script. The file can be empty if you don't want to exclude files, however you could end up backing up files you do not need backed up (for example iocage).
 
 ------------------------------------------------------------------------------------------------------------------------------
 Please Note: The latest version of this script can be found at: https://www.github.com/jaburt
