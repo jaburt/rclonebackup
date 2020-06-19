@@ -57,6 +57,12 @@ Further information about cryptcheck can be found at: https://rclone.org/command
 * Have added in a third parameter option "check", which checks the files in the source and destination match.
 * Rewrote the email generation aspect of the script to remove the need for the separate email_attachments.sh script - all managed within the one script now; as well as moving from "echo" to "printf" commands for more control.
 
+15-06-2020: I have updated it as follows:
+* Tidied up the script some more;
+* Have added another option to compress (gzip) the log file before being attached to the email (compressLog="yes"), this is set to "yes" by default.
+* You can also now request the script to keep a local copy (backup) of the unformatted log file (keepLog="no"), this is set to "no" by default, as well as how many logs to keep (amountBackups=31). Keeping the log was code I used to cut-n-paste in for my debugging, but deceided to leave it in as an option now.
+* Have added in some checks that will verify that some of the user defined variables are valid.
+
 # Usage
 1) Configure rclone
 
@@ -71,6 +77,10 @@ Visit my Github page and download the latest script and rclone_excludes.txt, and
 There are eight user-defined fields within the script, however many can be left at their defaults (depending on how you configured rclone).  You will need to review the following three at a minimum:
 
   src=, dest=, exclude_list=
+
+however, if you wish to keep a local copy of the logs, you will also need to review the following three:
+
+	 keepLog=, backupDestination=, amountBackups=
 
 Review the rclone_excludes.txt file, and add/remove exclusions as per your requirements.
 
