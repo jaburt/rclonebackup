@@ -148,7 +148,7 @@ exclude_list="/mnt/tank/Sysadmin/scripts/rclone_excludes.txt"
 compressLog="yes"
 
 # Do you want to keep a copy (backup) of the unformatted log file?
-keepLog="yes"
+keepLog="no"
 
 # Backup Destination.  The trailing slash is NOT needed. This is the absolute location
 # within your FreeNAS server.
