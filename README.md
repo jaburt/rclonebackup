@@ -63,6 +63,9 @@ Further information about cryptcheck can be found at: https://rclone.org/command
 * You can also now request the script to keep a local copy (backup) of the unformatted log file (keepLog="no"), this is set to "no" by default, as well as how many logs to keep (amountBackups=31). Keeping the log was code I used to cut-n-paste in for my debugging, but deceided to leave it in as an option now.
 * Have added in some checks that will verify that some of the user defined variables are valid.
 
+19-08-2025: Updated email sending process
+* This script now uses "sendemail.py" as "sendmail" has been removed from TrueNAS Scale: Script can be downloaded from: https://github.com/oxyde1989/standalone-tn-send-email, edit the "emailscript" with the location of the downloaded script (including script name).
+
 # Usage
 1) Configure rclone
 
